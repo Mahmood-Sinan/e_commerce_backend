@@ -2,8 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const { ApolloServer } = require('@apollo/server');
 const {
-  ApolloServerPluginLandingPageLocalDefault,
-  ApolloServerPluginLandingPageProductionDefault,
+    ApolloServerPluginLandingPageLocalDefault,
+    ApolloServerPluginLandingPageProductionDefault,
 } = require('@apollo/server/plugin/landingPage/default');
 const { expressMiddleware } = require('@as-integrations/express5');
 require('dotenv').config();
@@ -25,9 +25,9 @@ async function setupApollo() {
         resolvers: schema_resolvers,
         introspection: true,
         plugins: [
-            process.env.NODE_ENV === 'production'
-                ? ApolloServerPluginLandingPageProductionDefault()
-                : ApolloServerPluginLandingPageLocalDefault()
+            ApolloServerPluginLandingPageLocalDefault({
+                embed: true
+            })
         ]
     });
     await server.start();
