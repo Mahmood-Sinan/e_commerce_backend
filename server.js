@@ -1,6 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const { ApolloServer } = require('@apollo/server');
+const {
+  ApolloServerPluginLandingPageLocalDefault,
+  ApolloServerPluginLandingPageProductionDefault,
+} = require('@apollo/server/plugin/landingPage/default');
 const { expressMiddleware } = require('@as-integrations/express5');
 require('dotenv').config();
 const schemas = require('./src/graphql/schemas.js');
@@ -19,22 +23,27 @@ async function setupApollo() {
     const server = new ApolloServer({
         typeDefs: schemas,
         resolvers: schema_resolvers,
-        introspection: true
+        introspection: true,
+        plugins: [
+            process.env.NODE_ENV === 'production'
+                ? ApolloServerPluginLandingPageProductionDefault()
+                : ApolloServerPluginLandingPageLocalDefault()
+        ]
     });
     await server.start();
 
     app.use(
         '/graphql',
         expressMiddleware(server, {
-            context: async({req})=>{
+            context: async ({ req }) => {
                 const payload = req.headers.authorization || '';
-                if(!payload) return {decoded: null};
+                if (!payload) return { decoded: null };
                 const token = payload.substring(7, payload.length);
-                try{
+                try {
                     const decoded = jwt.verify(token, process.env.JWT_KEY);
-                    return {decoded};
-                } catch(e){
-                    return {decoded: null};
+                    return { decoded };
+                } catch (e) {
+                    return { decoded: null };
                 }
             }
         })
@@ -42,10 +51,10 @@ async function setupApollo() {
 }
 
 app.get('/', (req, res) => {
-  res.send('Backend running');
+    res.send('Backend running');
 });
 
-async function startServer(){
+async function startServer() {
     await setupApollo();
 
     // dont remove this route
