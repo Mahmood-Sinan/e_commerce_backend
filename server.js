@@ -35,6 +35,10 @@ async function setupApollo() {
     );
 }
 
+app.get('/', (req, res) => {
+  res.send('Backend running');
+});
+
 async function startServer(){
     await setupApollo();
 
