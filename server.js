@@ -18,7 +18,8 @@ const PORT = process.env.PORT || 5000;
 async function setupApollo() {
     const server = new ApolloServer({
         typeDefs: schemas,
-        resolvers: schema_resolvers
+        resolvers: schema_resolvers,
+        introspection: true
     });
     await server.start();
 
