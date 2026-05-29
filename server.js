@@ -1,9 +1,6 @@
 const express = require('express');
+const cors = require('cors');
 const { ApolloServer } = require('@apollo/server');
-const {
-  ApolloServerPluginLandingPageLocalDefault,
-  ApolloServerPluginLandingPageProductionDefault,
-} = require('@apollo/server/plugin/landingPage/default');
 const { expressMiddleware } = require('@as-integrations/express5');
 require('dotenv').config();
 const schemas = require('./src/graphql/schemas.js');
@@ -12,17 +9,16 @@ const jwt = require('jsonwebtoken');
 
 const app = express();
 app.use(express.json());
+app.use(cors({
+    origin: ['https://studio.apollographql.com'],
+    credentials: true
+}));
 const PORT = process.env.PORT || 5000;
 
 async function setupApollo() {
     const server = new ApolloServer({
         typeDefs: schemas,
-        resolvers: schema_resolvers,
-        plugins: [
-            process.env.NODE_ENV === 'production'
-                ? ApolloServerPluginLandingPageProductionDefault()
-                : ApolloServerPluginLandingPageLocalDefault()
-        ]
+        resolvers: schema_resolvers
     });
     await server.start();
 
