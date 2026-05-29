@@ -1,5 +1,9 @@
 const express = require('express');
 const { ApolloServer } = require('@apollo/server');
+const {
+  ApolloServerPluginLandingPageLocalDefault,
+  ApolloServerPluginLandingPageProductionDefault,
+} = require('@apollo/server/plugin/landingPage/default');
 const { expressMiddleware } = require('@as-integrations/express5');
 require('dotenv').config();
 const schemas = require('./src/graphql/schemas.js');
@@ -13,7 +17,12 @@ const PORT = process.env.PORT || 5000;
 async function setupApollo() {
     const server = new ApolloServer({
         typeDefs: schemas,
-        resolvers: schema_resolvers
+        resolvers: schema_resolvers,
+        plugins: [
+            process.env.NODE_ENV === 'production'
+                ? ApolloServerPluginLandingPageProductionDefault()
+                : ApolloServerPluginLandingPageLocalDefault()
+        ]
     });
     await server.start();
 
