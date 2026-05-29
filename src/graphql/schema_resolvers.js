@@ -1,4 +1,4 @@
-const pool = require('./db.js');
+const pool = require('../db_config/db.js');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
